@@ -104,6 +104,26 @@ router.get('/restaurants/:id/reviews', async (req, res) => {
   res.json(reviews.length > 0 ? reviews : mongoDB.reviews);
 });
 
+router.post('/restaurants/:id/reviews', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, rating, comment } = req.body;
+  
+  if (!rating || !comment) return res.status(400).json({ error: "Rating and comment are required." });
+
+  const newReview = {
+    id: "rev_" + Date.now(),
+    restaurantId: id,
+    name: name || "Anonymous",
+    avatar: (name || "A")[0].toUpperCase(),
+    date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    rating: parseInt(rating),
+    comment
+  };
+
+  mongoDB.reviews.unshift(newReview);
+  res.status(201).json(newReview);
+});
+
 router.get('/restaurants/:id/photos', async (req, res) => {
   await delay(400);
   res.json(mysqlDB.photos || []);

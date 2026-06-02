@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Users, ShoppingBag, TrendingUp, 
   Utensils, ClipboardList, CreditCard, Settings, 
   Search, Plus, Filter, MoreVertical, 
-  CheckCircle2, XCircle, Clock, Truck, ShieldAlert, Ban, Eye
+  CheckCircle2, XCircle, Clock, Truck, ShieldAlert, Ban, Eye,
+  Menu, X
 } from 'lucide-react';
 
 export default function Admin() {
@@ -14,6 +15,7 @@ export default function Admin() {
   const [payments, setPayments] = useState([]);
   const [allRestaurants, setAllRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdminSidebarOpen, setIsAdminSidebarOpen] = useState(false);
 
   // Form State
   const [showAddUser, setShowAddUser] = useState(false);
@@ -75,15 +77,41 @@ export default function Admin() {
 
   return (
     <div className="flex bg-[#f8f9fa] dark:bg-gray-900 min-h-screen pt-20 transition-colors duration-300">
+      {/* Overlay Backdrop for Mobile */}
+      {isAdminSidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+          onClick={() => setIsAdminSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 hidden lg:flex flex-col sticky top-20 h-[calc(100vh-5rem)]">
-        <div className="p-6">
+      <aside 
+        className={`fixed lg:sticky top-0 lg:top-20 left-0 z-50 lg:z-30 w-64 h-full lg:h-[calc(100vh-5rem)] bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 flex flex-col transition-transform duration-300 transform 
+          ${isAdminSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        {/* Header for Mobile Sidebar */}
+        <div className="lg:hidden p-6 border-b border-gray-50 dark:border-gray-700/50 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/20">
+          <span className="font-extrabold text-sm uppercase tracking-widest text-gray-900 dark:text-white">Admin Menu</span>
+          <button 
+            onClick={() => setIsAdminSidebarOpen(false)}
+            className="p-1.5 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 flex-1 overflow-y-auto">
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6">Management</p>
           <nav className="space-y-2">
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setIsAdminSidebarOpen(false);
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
                   activeTab === item.id 
                     ? 'bg-mango-500 text-white shadow-lg shadow-mango-500/20' 
@@ -102,7 +130,14 @@ export default function Admin() {
       <main className="flex-1 p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsAdminSidebarOpen(true)}
+              className="lg:hidden p-2 text-gray-600 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              title="Open Admin Menu"
+            >
+              <Menu size={20} />
+            </button>
             <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
               {menuItems.find(i => i.id === activeTab)?.label}
             </h1>

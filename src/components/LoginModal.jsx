@@ -55,7 +55,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
       if (email === 'admin@mangobite.com' || email === 'irfanshaikh80149@gmail.com') role = 'admin';
       if (email === 'partner@mangobite.com') role = 'partner';
 
-      const syncRes = await fetch('http://13.62.223.161:5001/api/auth/sync', {
+      const syncRes = await fetch('/api/auth/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, name: user.displayName || 'User', profilePic: user.photoURL, role: role })
@@ -109,7 +109,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
       if (user.email === 'admin@mangobite.com' || user.email === 'irfanshaikh80149@gmail.com') role = 'admin';
       if (user.email === 'partner@mangobite.com') role = 'partner';
 
-      const syncRes = await fetch('http://13.62.223.161:5001/api/auth/sync', {
+      const syncRes = await fetch('/api/auth/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, name: user.displayName || 'Google User', profilePic: user.photoURL, role: role })

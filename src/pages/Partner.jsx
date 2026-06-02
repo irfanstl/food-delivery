@@ -22,9 +22,9 @@ export default function Partner() {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setFormData(prev => ({ 
-          ...prev, 
-          coordinates: `${position.coords.latitude}, ${position.coords.longitude}` 
+        setFormData(prev => ({
+          ...prev,
+          coordinates: `${position.coords.latitude}, ${position.coords.longitude}`
         }));
         setIsLocating(false);
       },
@@ -38,30 +38,30 @@ export default function Partner() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('submitting');
-    
+
     // Concatenate address for backend
     const fullAddress = [
-      formData.addressLine1, 
-      formData.addressLine2, 
-      formData.addressLine3, 
-      formData.city, 
-      formData.zip, 
+      formData.addressLine1,
+      formData.addressLine2,
+      formData.addressLine3,
+      formData.city,
+      formData.zip,
       formData.coordinates ? `(GPS: ${formData.coordinates})` : ''
     ].filter(Boolean).join(', ');
     const payload = { ...formData, address: fullAddress };
-    
+
     try {
-      const response = await fetch('http://13.62.223.161:5001/api/restaurants', {
+      const response = await fetch('http://localhost:5001/api/restaurants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      
+
       if (response.ok) {
         setStatus('success');
-        setFormData({ 
-          name: '', type: '', deliveryTime: '', deliveryFee: '', img: '', 
-          addressLine1: '', addressLine2: '', addressLine3: '', city: '', zip: '', coordinates: '' 
+        setFormData({
+          name: '', type: '', deliveryTime: '', deliveryFee: '', img: '',
+          addressLine1: '', addressLine2: '', addressLine3: '', city: '', zip: '', coordinates: ''
         });
       } else {
         setStatus('error');
@@ -78,7 +78,7 @@ export default function Partner() {
         <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
         <h1 className="text-4xl font-bold mb-4 dark:text-white">Application Received!</h1>
         <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">Your restaurant registration has been submitted and is currently pending admin approval. Once approved, it will be visible to customers.</p>
-        <button 
+        <button
           onClick={() => { setStatus('idle'); setActiveTab('details'); }}
           className="bg-mango-500 hover:bg-mango-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors"
         >
@@ -100,17 +100,17 @@ export default function Partner() {
       </div>
 
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
-        
+
         {/* Tabs */}
         <div className="flex border-b border-gray-100 dark:border-gray-800">
-          <button 
+          <button
             type="button"
             onClick={() => setActiveTab('details')}
             className={`flex-1 py-4 text-center font-bold text-sm sm:text-base transition-colors ${activeTab === 'details' ? 'text-mango-600 border-b-2 border-mango-500 bg-mango-50/30' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
           >
             1. Restaurant Details
           </button>
-          <button 
+          <button
             type="button"
             onClick={() => setActiveTab('address')}
             className={`flex-1 py-4 text-center font-bold text-sm sm:text-base transition-colors ${activeTab === 'address' ? 'text-mango-600 border-b-2 border-mango-500 bg-mango-50/30' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
@@ -120,9 +120,9 @@ export default function Partner() {
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 md:p-12">
-          
+
           <div className="space-y-8">
-            
+
             {activeTab === 'details' && (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 {/* Restaurant Name */}
@@ -223,7 +223,7 @@ export default function Partner() {
                     </div>
                   </div>
                 </div>
-                
+
                 <button
                   type="button"
                   onClick={() => setActiveTab('address')}
@@ -238,8 +238,8 @@ export default function Partner() {
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-bold text-gray-900 dark:text-white text-lg">Restaurant Location</h3>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={getLocation}
                     disabled={isLocating}
                     className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
@@ -248,7 +248,7 @@ export default function Partner() {
                     {isLocating ? 'Locating...' : 'Use GPS Location'}
                   </button>
                 </div>
-                
+
                 {formData.coordinates && (
                   <div className="bg-green-50 text-green-700 text-sm font-bold p-3 rounded-xl mb-4 border border-green-200 flex items-center gap-2">
                     <CheckCircle size={16} /> GPS Location captured: {formData.coordinates}
@@ -356,7 +356,7 @@ export default function Partner() {
                 </div>
               </div>
             )}
-            
+
           </div>
         </form>
       </div>

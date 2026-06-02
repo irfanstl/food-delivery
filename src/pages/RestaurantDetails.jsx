@@ -23,6 +23,9 @@ export default function RestaurantDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('menu');
   const [copied, setCopied] = useState(false);
+  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [newReviewComment, setNewReviewComment] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const tabRefs = useRef({});
   const tabSectionRef = useRef(null);
 
@@ -68,6 +71,38 @@ export default function RestaurantDetails() {
       document.body.removeChild(ta);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!newReviewComment.trim()) return;
+    setIsSubmittingReview(true);
+    try {
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : { name: 'Anonymous' };
+      const res = await fetch(`/api/restaurants/${id}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: user.name,
+          rating: newReviewRating,
+          comment: newReviewComment
+        })
+      });
+      if (res.ok) {
+        const newReview = await res.json();
+        setReviews([newReview, ...reviews]);
+        setNewReviewComment('');
+        setNewReviewRating(5);
+        toast.success('Review added successfully!');
+      } else {
+        toast.error('Failed to add review');
+      }
+    } catch (err) {
+      toast.error('An error occurred');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -316,6 +351,38 @@ export default function RestaurantDetails() {
                 ))}
               </div>
             </div>
+
+            {/* Add Review Form */}
+            <form onSubmit={submitReview} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm mb-6">
+              <h4 className="font-bold text-gray-900 mb-4">Write a Review</h4>
+              <div className="flex gap-2 mb-4">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <button 
+                    type="button" 
+                    key={star} 
+                    onClick={() => setNewReviewRating(star)}
+                    className="focus:outline-none transition-transform hover:scale-110"
+                  >
+                    <Star size={24} className={star <= newReviewRating ? 'text-mango-500 fill-mango-500' : 'text-gray-300 fill-gray-200'} />
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={newReviewComment}
+                onChange={(e) => setNewReviewComment(e.target.value)}
+                placeholder="Share your experience..."
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-mango-500/20 focus:border-mango-500 transition-all resize-none mb-4"
+                rows="3"
+                required
+              />
+              <button 
+                type="submit" 
+                disabled={isSubmittingReview || !newReviewComment.trim()}
+                className="bg-mango-600 hover:bg-mango-700 text-white font-bold py-2.5 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+              </button>
+            </form>
 
             {reviews.map((review) => (
               <div key={review.id} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
